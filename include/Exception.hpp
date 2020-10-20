@@ -11,7 +11,6 @@ namespace util
 			Exception();
 			Exception(std::string, ...);
 			Exception(Exception, std::string, ...);
-			Exception(std::string, Exception, ...);
 
 			~Exception();
 

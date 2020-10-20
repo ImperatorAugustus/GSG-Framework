@@ -9,11 +9,12 @@ int main(int argc, char* argv[])
 	try
 	{
 		engine = new eng::Engine();
+		
 		engine->run();
 	}
 	catch (const util::Exception& ex)
 	{
-		util::Log(util::Error) << ex.what();
+		util::Log(util::Fatal) << ex.what();
 	}
 	
 	delete engine;
