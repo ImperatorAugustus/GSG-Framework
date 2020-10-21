@@ -27,6 +27,7 @@ namespace util
 		// Something went wrong that irrevocably forces a system crash.
 		Fatal = 6,
 		
+		// Extra flag. In case you want to output absolutely everything to the logger. Do not use for actual logging.
 		All = 0
 	};
 	

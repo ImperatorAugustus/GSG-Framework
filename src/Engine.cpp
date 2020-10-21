@@ -2,8 +2,9 @@
 #include <include/Exception.hpp>
 #include <include/Logger.hpp>
 
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_opengl.h>
 
 eng::Engine::Engine()
 {
@@ -21,17 +22,47 @@ void eng::Engine::init()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
 	{
-		throw util::Exception("Failed to load SDL: %s.", SDL_GetError());
+		throw util::Exception("Failed to load SDL: %s", SDL_GetError());
+	}
+	
+	this->window = SDL_CreateWindow("GSG Framework", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	
+	if (this->window == nullptr)
+	{
+		throw util::Exception("Failed to create an SDL window: %s", SDL_GetError());
+	}
+	
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+	
+	this->glcontext = SDL_GL_CreateContext(this->window);
+	if (this->glcontext == NULL)
+	{
+		throw util::Exception("Failed to create an OpenGL context: %s", SDL_GetError());
 	}
 	
 	util::Log(util::Debug) << "Initialized SDL.";
 	
-	this->window = SDL_CreateWindow("GSG Framework", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+	int vmaj, vmin;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &vmaj);
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &vmin);
 	
-	if (this->window == nullptr)
+	SDL_GL_SetSwapInterval(1);
+	
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	
+	glCullFace(GL_BACK);
+	
+	glDepthFunc(GL_LESS);
+	
+	GLenum error = glewInit();
+	if (error != GLEW_OK)
 	{
-		throw util::Exception("Failed to create an SDL window: %s.", SDL_GetError());
+		throw util::Exception("Failed to initialize OpenGL: %s", glewGetErrorString(error));
 	}
+	
+	util::Log(util::Debug) << "Initialized OpenGl version " << vmaj << "." << vmin;
 	
 	this->running = true;
 }
@@ -107,4 +138,10 @@ void eng::Engine::tick()
 void eng::Engine::render()
 {
 	// render logic
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// Here we do things.
+	
+	SDL_GL_SwapWindow(this->window);
 }

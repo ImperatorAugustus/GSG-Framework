@@ -21,6 +21,7 @@ namespace eng
 		
 	private:
 		SDL_Window* window;
+		SDL_GLContext glcontext;
 		bool running;
 	};
 }
